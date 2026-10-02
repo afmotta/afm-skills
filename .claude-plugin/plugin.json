@@ -1,0 +1,6 @@
+{
+  "name": "pr-tools",
+  "version": "1.0.0",
+  "description": "PR review and fix loop: /pr-review, /resolve-pr-comments and /pr-loop, with the two thermo-nuclear reviewer subagents.",
+  "author": { "name": "Alberto Francesco Motta" }
+}

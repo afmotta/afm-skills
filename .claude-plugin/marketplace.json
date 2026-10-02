@@ -1,0 +1,12 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "pr-tools",
+  "owner": { "name": "Alberto Francesco Motta" },
+  "plugins": [
+    {
+      "name": "pr-tools",
+      "description": "PR review and fix loop with thermo-nuclear reviewer subagents.",
+      "source": "./"
+    }
+  ]
+}
