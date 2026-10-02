@@ -11,7 +11,7 @@ Needs: `gh` installed and signed in.
 ## Install
 
 ```
-/plugin marketplace add <github-user>/pr-tools
+/plugin marketplace add afmotta/pr-tools
 /plugin install pr-tools@pr-tools
 ```
 
