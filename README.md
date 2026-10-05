@@ -1,6 +1,8 @@
 # afm-skills
 
-Claude Code plugin with three skills:
+Personal Claude Code skills and agents.
+
+## PR workflow
 
 - `/afm-skills:pr-review [pr] [post|auto]`: four reviewers run in parallel (two thermo-nuclear subagents, ponytail-review and an adversarial pass). It dedupes their findings, you approve each comment, and the result goes to `.scratch/pr-review/<pr>.md`. With `post`, it goes on the PR instead.
 - `/afm-skills:resolve-pr-comments [pr|findings.md] [auto]`: a subagent judges each comment, then the plugin applies the fixes, pushes and replies.
