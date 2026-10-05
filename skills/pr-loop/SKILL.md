@@ -15,9 +15,9 @@ Target: `$ARGUMENTS` (default: the PR for the current branch, `gh pr view`).
 - Scratch file: `.scratch/pr-review/<pr-number>.md`.
 
 ## Each round (max 5)
-1. **Review.** Invoke the `pr-tools:pr-review` skill with `<n> auto`.
+1. **Review.** Invoke the `afm-skills:pr-review` skill with `<n> auto`.
 2. **Stop check.** No new finding of medium or above → Report. This round's low findings stay unticked in the scratch file.
-3. **Resolve.** Invoke the `pr-tools:resolve-pr-comments` skill with `<scratch-path> auto`.
+3. **Resolve.** Invoke the `afm-skills:resolve-pr-comments` skill with `<scratch-path> auto`.
 4. No finding got a FIX verdict → the code didn't change, another review would see the same thing → Report. Otherwise next round.
 
 ## Report

@@ -1,6 +1,6 @@
 {
-  "name": "pr-tools",
+  "name": "afm-skills",
   "version": "1.0.0",
-  "description": "PR review and fix loop: /pr-review, /resolve-pr-comments and /pr-loop, with the two thermo-nuclear reviewer subagents.",
+  "description": "Personal Claude Code skills and agents by Alberto Francesco Motta.",
   "author": { "name": "Alberto Francesco Motta" }
 }

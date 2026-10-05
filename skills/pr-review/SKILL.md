@@ -17,8 +17,8 @@ Nothing is posted to GitHub unless the args contain `post`. Without it the revie
 Gather the context once: PR title and body, `gh pr diff <n>`, the list of changed files, and the scratch file `.scratch/pr-review/<pr-number-or-branch>.md` if it exists. Every reviewer gets all of it under `### PR`, `### Git / diff output`, `### Changed files` and `### Prior findings`.
 
 Launch the four reviewers in one message, in parallel:
-- `subagent_type: pr-tools:thermo-nuclear-review-subagent` — bugs, breakage, security, devex, scoped to the diff.
-- `subagent_type: pr-tools:thermo-nuclear-code-quality-review-subagent` — structure and maintainability.
+- `subagent_type: afm-skills:thermo-nuclear-review-subagent` — bugs, breakage, security, devex, scoped to the diff.
+- `subagent_type: afm-skills:thermo-nuclear-code-quality-review-subagent` — structure and maintainability.
 - `subagent_type: general-purpose` — run the `ponytail:ponytail-review` skill on the diff (if the ponytail plugin is not installed, review the diff for over-engineering instead: reinvented stdlib, needless dependencies, speculative abstractions).
 - `subagent_type: general-purpose` — adversarial review of the changed files as a whole, not just the diff: how the new code interacts with what's around it, callers, edge cases, failure modes.
 

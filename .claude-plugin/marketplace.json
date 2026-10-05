@@ -1,11 +1,11 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "pr-tools",
+  "name": "afm-skills",
   "owner": { "name": "Alberto Francesco Motta" },
   "plugins": [
     {
-      "name": "pr-tools",
-      "description": "PR review and fix loop with thermo-nuclear reviewer subagents.",
+      "name": "afm-skills",
+      "description": "Personal Claude Code skills and agents.",
       "source": "./"
     }
   ]
