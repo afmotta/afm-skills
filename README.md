@@ -23,3 +23,9 @@ Recommended: the ponytail plugin. pr-review uses its `ponytail-review` skill and
 /plugin marketplace add DietrichGebert/ponytail
 /plugin install ponytail@ponytail
 ```
+
+## Credits
+
+- [Andrea Cappadona](https://github.com/andreacappadona17) wrote the first version of `pr-review`.
+- [Daniele Cammareri](https://github.com/dancamma) wrote the first version of `resolve-pr-comments`.
+- The thermo-nuclear review agents are adapted from [cursor/plugins `thermos`](https://github.com/cursor/plugins/tree/main/thermos) (MIT, see [agents/LICENSE-thermos](agents/LICENSE-thermos)).

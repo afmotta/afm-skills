@@ -2,5 +2,6 @@
   "name": "afm-skills",
   "version": "1.0.0",
   "description": "Personal Claude Code skills and agents by Alberto Francesco Motta.",
-  "author": { "name": "Alberto Francesco Motta" }
+  "author": { "name": "Alberto Francesco Motta" },
+  "license": "MIT"
 }
