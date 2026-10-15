@@ -12,7 +12,7 @@ Needs: `gh` installed and signed in.
 
 ## Ticket workflow
 
-- `/afm-skills:ticket-flow <epic|ticket>`: picks the next ticket in the epic, assigns it to you and moves it to In Progress. It agrees the TDD seams with you, builds the ticket test-first in a subagent, opens the PR and links it in a Jira comment. Then it runs pr-loop and moves the ticket to Ready for Review (dev).
+- `/afm-skills:ticket-flow <epic|ticket>`: picks the next ticket in the epic, assigns it to you and moves it to In Progress. It agrees the TDD seams with you, builds the ticket test-first in a subagent, opens a draft PR and links it in a Jira comment. Then it runs pr-loop, marks the PR ready and moves the ticket to Ready for Review (dev).
 
 Needs: the Atlassian MCP connector, `gh`, and the mattpocock-skills plugin (for `tdd`).
 

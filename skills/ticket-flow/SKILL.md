@@ -36,7 +36,7 @@ Show the seams to the user and get them confirmed or edited. TDD forbids tests a
 Send the builder the confirmed seams and these instructions:
 - Run the tdd loop one vertical slice at a time and commit after each green, following the repo's commit convention.
 - At the end, run the repo's full tests, lint and typecheck.
-- Push, then `gh pr create` with title `<KEY>: <summary>` and a body covering what changed and why, the Jira link and how it was tested.
+- Push, then `gh pr create --draft` with title `<KEY>: <summary>` and a body covering what changed and why, the Jira link and how it was tested.
 - Return the PR number and URL, the commits, the test command and its result, and anything left out.
 - If it gets blocked, return `BLOCKED` with its questions and stop.
 
@@ -48,6 +48,6 @@ Once the PR is open, comment on the ticket with `addCommentToJiraIssue`: `PR: <u
 pr-loop has `disable-model-invocation`, so read `../pr-loop/SKILL.md` (relative to this skill's base directory) and follow it with the PR number. It runs here, not in a subagent, because pr-review spawns its own subagents and subagents can't nest.
 
 ## 6. Hand off
-- If the loop stopped clean or with no fixes, and pr-loop reported no failed checks, move the ticket to **Ready for Review (dev)** the same way as in step 2.
-- If it hit the round cap or checks are failing, leave the status alone and ask the user.
+- If the loop stopped clean or with no fixes, and pr-loop reported no failed checks, mark the PR ready (`gh pr ready <n>`) and move the ticket to **Ready for Review (dev)** the same way as in step 2.
+- If it hit the round cap or checks are failing, leave the PR in draft and the status alone, and ask the user.
 - Report: the ticket, the PR link, the Jira status, pr-loop's stop reason, and its SEPARATE_PR items as ticket candidates.
