@@ -12,7 +12,7 @@ Needs: `gh` installed and signed in.
 
 ## Ticket workflow
 
-- `/afm-skills:ticket-flow <epic|ticket>`: picks the next ticket in the epic, assigns it to you and moves it to In Progress. It agrees the TDD seams with you, builds the ticket test-first in a subagent, opens a draft PR and links it in a Jira comment. Then it runs pr-loop, marks the PR ready and moves the ticket to Ready for Review (dev).
+- `/afm-skills:ticket-flow [auto] <epic...|story>`: picks the next user story in the epics. If the story is too big for one PR, it agrees a split into slices with you and records it in `.scratch/ticket-flow/<story>.md` (never as Jira subtasks). It assigns the story to you and moves it to In Progress, agrees the TDD seams for the next slice, builds that slice test-first in a subagent, opens a draft PR and links it in a Jira comment. Then it runs pr-loop and marks the PR ready. Once every slice has a ready PR, it moves the story to Ready for Review (dev). One run builds one slice. `auto` takes the recommended story without asking, but the split and the seams still need your OK. To work through whole epics, wrap it in a loop: `/loop /afm-skills:ticket-flow auto EPIC-1 EPIC-2`. The loop ends when no story has work left.
 
 Needs: the Atlassian MCP connector, `gh`, and the mattpocock-skills plugin (for `tdd`).
 
