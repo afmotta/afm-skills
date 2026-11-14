@@ -16,6 +16,8 @@ Needs: `gh` installed and signed in.
 
 Needs: the Atlassian MCP connector, `gh`, and the mattpocock-skills plugin (for `tdd`).
 
+- `/afm-skills:phase-flow <plan-file|epic> [from <phase>]`: ticket-flow run unattended across a phased plan. For each phase it stacks a `tmp-<plan>-phase-<n>` branch with every earlier phase's PRs merged in, then builds each story of the phase one at a time in subagents, splitting it and choosing the seams itself. It opens a draft PR labelled `CE+` against that branch, runs the review loop, gets CI green (or proves a failure pre-existing), marks the PR ready and moves the story to review. It never asks: every decision it takes for you goes in the PR body and in `.scratch/phase-flow/<plan>.state.md`, which also lets a stopped run resume. A check that fails the same way on the base branch is accepted and noted rather than blocking. It stops at the end of a phase if any story is blocked, and never merges or touches `main`.
+
 ## Install
 
 ```
