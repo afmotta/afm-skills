@@ -1,6 +1,6 @@
 # phase-flow subagent briefs
 
-The orchestrator fills in the `<...>` fields. Every brief also gets the repo path, the default branch, the PR title convention, and its base branch: the phase base, or the earlier slice's branch for a stacked slice.
+The orchestrator fills in the `<...>` fields. Every brief also gets the repo path, the default branch, the PR title convention, the plan's labels, and its base branch: the phase base, or the earlier slice's branch for a stacked slice.
 
 All subagents are `general-purpose` and **unattended**: nobody will answer a question. When something is open, settle it from the story, the epic, the code and the repo's CLAUDE.md, write the decision down, and go on. Return `BLOCKED: <reason>` only when those sources can't settle it, or when progress needs credentials, an external system or a human. Return text only; the orchestrator writes the state file.
 
@@ -26,6 +26,30 @@ epic: <epic-key>
 
 If the epic lists no phases, derive them from the stories' "is blocked by" links (phase 0 = no open blockers, phase n = blockers only in earlier phases) and add a first line `derived: blocks links`.
 
+## Plan checker
+
+Check the plan in `<plan-file>`. Every story in a phase builds on the same base, which holds only the earlier phases.
+
+1. For every story, read its "is blocked by" links (getJiraIssue, fields `issuelinks`, `status`) and note each blocker's status. Search for its PRs with `gh pr list --state all --search "<KEY> in:title"`.
+2. A story that already has an open or merged PR, on any base, is **built**: its base is fixed, so it stays where it is whatever its blockers. A built story whose blocker sits in the same or a later phase is reported under `stale:`: either the link is stale or the PR was built too early.
+3. A blocker of an unbuilt story is **satisfied** when one of these holds:
+   - it sits in an earlier phase;
+   - its PR is merged into the default branch;
+   - its Jira status category is Done.
+
+   A blocker in the same phase or a later one is unsatisfied.
+4. An unbuilt story with an unsatisfied blocker that is **in the plan** moves to the phase after that blocker's phase, at the end of that phase. Repeat until nothing moves, because a move can push its dependants later too. Add phases at the end when needed, keep the relative order of the stories that didn't move, and drop phases left empty.
+5. An unsatisfied blocker that is **outside the plan** stays as it is. Report it.
+
+Return:
+
+- the revised plan file content, in the same format;
+- `moves:`, one line per moved story, from its original phase to its final one (`<KEY>: phase <a> → <b>, blocked by <BLOCKER> in phase <c>`, naming the blocker that decided the final phase);
+- `external:`, one line per outside blocker (`<KEY> blocked by <BLOCKER> (<status>)`);
+- `stale:`, one line per built story whose blocker sits in the same or a later phase (`<KEY> (PR #n) blocked by <BLOCKER> in phase <c>`).
+
+Always return the revised plan. Write `none` for an empty list.
+
 ## Builder
 
 You build `<slice>` of Jira story `<KEY>` in `<repo>`, unattended, and open its draft PR. Base: `<base>`. Branch: `<branch>` (`<exists: new | branch exists | PR #n exists>`; if it exists, continue from its commits).
@@ -35,7 +59,7 @@ You build `<slice>` of Jira story `<KEY>` in `<repo>`, unattended, and open its 
 3. **Seams.** Load `mattpocock-skills:tdd` and follow it, with one change: you choose the seams yourself, and the list you write in the PR body's Decisions section stands in for the user's confirmation. For an upgrade, the seams are mostly the existing suites that must stay green and unchanged, plus a test for any behaviour the upgrade changes.
 4. **Build** test-first, one tracer bullet at a time, committing after each green. Measure before and after whatever the story or epic asks to measure (audit counts, build time, bundle size).
 5. **Check** with the repo's full unit suites and CI's flags, then lint, typecheck and build. Compare any failure against `<base>`: a failure the base also has is pre-existing. Report it rather than fixing it here.
-6. **PR.** Push, then `gh pr create --draft --base <base> --label "CE+" --assignee @me`.
+6. **PR.** Push, then `gh pr create --draft --base <base> --assignee @me`, plus `--label "<label>"` for each of `<labels>` (none when the plan sets none).
    - **Title:** follow the repo's convention, with `<KEY> (<n>/<total>)` in it for a split story.
    - **Body:** follow the repo's PR template. Cover what changed and why, the Jira link, the slice (n/total) and what the other slices cover, how it was tested, the measurements, and that it is stacked on `<base>`.
    - **Ending:** close the body with **Decisions taken without review**: the split, the seams, and every judgment call, one line each.

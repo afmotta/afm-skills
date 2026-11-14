@@ -1,13 +1,13 @@
 ---
 name: phase-flow
-description: Run a phased plan of Jira stories end to end, unattended. For each phase, stack a temp branch with every earlier phase's PRs merged, then build each story of the phase one at a time in subagents (split, seams, TDD, PR labelled CE+), run the review loop, get CI green and hand the story to review. Never asks the user anything.
-argument-hint: "<plan-file | epic-key> [from <phase>]"
+description: Run a phased plan of Jira stories end to end, unattended. For each phase, stack a temp branch with every earlier phase's PRs merged, then build each story of the phase one at a time in subagents (split, seams, TDD, draft PR with the plan's labels), run the review loop, get CI green and hand the story to review. Never asks the user anything.
+argument-hint: "<plan-file | epic-key> [plan] [from <phase>]"
 disable-model-invocation: true
 ---
 
 # Phase flow
 
-Target: `$ARGUMENTS`. The **plan** is a markdown file, or an epic key whose description lists the phases. `from <n>` starts at phase n; without it the run resumes from its state file.
+Target: `$ARGUMENTS`. The **plan** is a markdown file, or an epic key whose description lists the phases. `from <n>` starts at phase n; without it the run resumes from its state file. `plan` stops after preflight: the plan is written, checked and seeded, nothing is built, and the phase table is printed for the user to review before the real run.
 
 This is ticket-flow run unattended across a whole plan. Every place where ticket-flow, pr-loop or tdd would ask the user, phase-flow decides, writes the decision down, and keeps going.
 
@@ -19,7 +19,7 @@ Jira goes through the Atlassian MCP tools (cloudId from `getAccessibleAtlassianR
 
 - The run pushes to its own branches (story branches and `tmp-<plan>-phase-<n>`) and to the head branches of the plan's open PRs. `main` is only ever read. Merging PRs is the user's job.
 - Make CI green by fixing code. Tests, coverage thresholds, lint config and workflows change only when the story is about them, and hooks always run.
-- Open every PR as a draft with the label `CE+`. Create the label once if the repo lacks it (`gh label create "CE+"`).
+- Open every PR as a draft, with the plan's labels if it sets any.
 - Jira changes are limited to the plan's stories: assign to the user, move to In Progress, comment the PR link, move to review.
 - When progress needs a human (credentials, an external system, a decision the story, the epic and the code can't settle), mark the slice `blocked` with the reason and move to the next story. When Jira or `gh` authentication fails, stop the run and report.
 
@@ -30,6 +30,7 @@ Plan file, `.scratch/phase-flow/<plan>.md` at the top of the checkout the run st
 ```markdown
 # PUK-2749 puk-portal vulns
 epic: PUK-2749
+labels: CE+
 ## Phase 0
 - ENG-9220
 - ENG-9222
@@ -38,7 +39,11 @@ epic: PUK-2749
 - ENG-9221
 ```
 
+`labels:` is optional: a comma-separated list of GitHub labels for every PR the run opens. Without it, PRs get no labels.
+
 Stories are built in the order listed. Given an epic key, reuse `.scratch/phase-flow/<epic-lower>.md` if it exists; otherwise spawn the **Plan extractor** (briefs.md) and write its output there.
+
+**Phase check.** Every story in a phase builds on the same base, which holds only the earlier phases. So every story still to build must have its "is blocked by" stories in an earlier phase, already merged, or Done; a story that already has an open or merged PR stays put. Before any phase starts, spawn the **Plan checker** (briefs.md) on the plan file. It moves each unbuilt story whose blocker sits in the same or a later phase into the phase after that blocker, cascading to the stories that wait on it, and leaves the order within each phase unchanged. Write its revised plan over the plan file, and record each move as a Decision. A blocker outside the plan that isn't Done or merged stays where it is, listed under Follow-ups; its story is built anyway. The checker's `stale:` lines (built stories whose blocker comes later, usually a link to delete) go under Follow-ups too.
 
 State file, `.scratch/phase-flow/<plan>.state.md`, written only by the orchestrator:
 
@@ -52,7 +57,9 @@ State file, `.scratch/phase-flow/<plan>.state.md`, written only by the orchestra
 ## 0. Preflight
 
 - Ensure `.scratch/` is in `.git/info/exclude`. Refuse on a dirty tree. `git fetch origin`.
-- Read the plan, create the state file if missing, and create the `CE+` label if missing.
+- Read the plan, run the phase check, and create the state file if missing. Seed it with one row per story, filled in from Existing work.
+- With `plan`: print the phase table (phase, key, existing PRs and status, moves made by the phase check), the external blockers, the stale links, the labels the PRs will get (or `none`) and the state file's path, then stop. Nothing else changes: no label creation, no Jira, no branches.
+- Create each of the plan's labels the repo lacks (`gh label create "<label>"`).
 - Note the default branch, the repo's PR title convention (CLAUDE.md, recent merged PR titles), the PR template, the user's Jira accountId (`atlassianUserInfo`), and which events the CI workflows trigger on (`.github/workflows`).
 
 ## 1. Phase base
